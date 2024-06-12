@@ -6,18 +6,16 @@ from sqlalchemy.orm import Session
 
 from database.connection import get_db
 from schemas.posts import DeletePostResponse, Post, UpdatePost
-from controllers.post_crud import (
-    post_create,
-    post_delete,
-    post_update,
-    get_user_posts
-)
+from controllers.post_crud import post_create, post_delete, post_update, get_user_posts
 from fastapi_cache.decorator import cache
 
 router = APIRouter(tags=["posts"])
 
+
 @router.post("/create", status_code=status.HTTP_201_CREATED, response_model=Post)
-def create_post(post: Post, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+def create_post(
+    post: Post, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()
+):
     Authorize.jwt_required()
     return post_create(db=db, post=post)
 
@@ -33,7 +31,6 @@ def get_all_posts(db: Session = Depends(get_db), Authorize: AuthJWT = Depends())
 @router.delete(
     "/delete/{id}", status_code=status.HTTP_200_OK, response_model=DeletePostResponse
 )
-
 def delete_post(id, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     delete_status = post_delete(db=db, id=id)
@@ -46,6 +43,8 @@ def delete_post(id, db: Session = Depends(get_db), Authorize: AuthJWT = Depends(
 
 
 @router.patch("/update", status_code=status.HTTP_200_OK, response_model=Post)
-def update_post(post: UpdatePost, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+def update_post(
+    post: UpdatePost, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()
+):
     Authorize.jwt_required()
     return post_update(db=db, post=post)

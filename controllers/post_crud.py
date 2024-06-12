@@ -15,6 +15,7 @@ def post_create(db: Session, post: Post):
 def posts_get_all(db: Session):
     return db.query(Posts).all()
 
+
 def get_user_posts(db: Session, user_id: int):
     return db.query(Posts).filter_by(user_id=user_id)
 

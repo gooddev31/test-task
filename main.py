@@ -26,19 +26,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class Settings(BaseModel):
     authjwt_secret_key: str = "secret"
+
 
 @AuthJWT.load_config
 def get_config():
     return Settings()
 
+
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.message}
-    )
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -46,9 +47,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     yield
 
+
 app.include_router(user_router)
 app.include_router(posts_router)
-
 
 
 @app.get("/")

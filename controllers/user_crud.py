@@ -11,5 +11,6 @@ def create_user(db: Session, user: CreateUser):
     db.refresh(db_user)
     return db_user
 
+
 def get_user(db: Session, email: str, password: str) -> User:
     return db.query(Users).filter_by(email=email, password=password).one()

@@ -8,27 +8,32 @@ from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["users"])
 
-@router.post('/login')
-def login(user: CreateUser, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+
+@router.post("/login")
+def login(
+    user: CreateUser, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)
+):
     try:
         user = get_user(db, user.email, user.password)
         access_token = Authorize.create_access_token(subject=user.email)
         return {"access_token": access_token}
     except:
-        raise HTTPException(status_code=401,detail="Bad username or password")
+        raise HTTPException(status_code=401, detail="Bad username or password")
 
 
-@router.post('/signup')
-def signup(user: CreateUser, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+@router.post("/signup")
+def signup(
+    user: CreateUser, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)
+):
     try:
         user = create_user(db, user)
         access_token = Authorize.create_access_token(subject=user.email)
         return {"access_token": access_token}
     except:
-        raise HTTPException(status_code=401,detail="Error while creating new user")
+        raise HTTPException(status_code=401, detail="Error while creating new user")
 
 
-@router.get('/user')
+@router.get("/user")
 def user(Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
 
