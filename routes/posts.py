@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi_jwt_auth import AuthJWT
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 
 from database.connection import get_db
@@ -22,8 +22,13 @@ def create_post(
 
 @router.get("/list/all", status_code=status.HTTP_200_OK, response_model=List[Post])
 @cache(expire=300)
-def get_all_posts(db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+def get_all_posts(
+    request: Request, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()
+):
     Authorize.jwt_required()
+    content_length = request.headers.get("content-length")
+    if content_length and int(content_length) > 1048576:
+        raise HTTPException(status_code=413, detail="Payload too large")
     current_user = Authorize.get_jwt_subject()
     return get_user_posts(db, current_user)
 
