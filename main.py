@@ -4,8 +4,15 @@ from fastapi.responses import JSONResponse
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from pydantic import BaseModel
+from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
 
 from routes.users import router as user_router
+from routes.posts import router as posts_router
+from redis import asyncio as aioredis
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache import FastAPICache
+from decouple import config
 
 app = FastAPI()
 
@@ -33,7 +40,16 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
         content={"detail": exc.message}
     )
 
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    redis = aioredis.from_url(config("REDIS_URL"))
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    yield
+
 app.include_router(user_router)
+app.include_router(posts_router)
+
+
 
 @app.get("/")
 async def index():

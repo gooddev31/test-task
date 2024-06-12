@@ -12,6 +12,7 @@ from controllers.post_crud import (
     post_update,
     get_user_posts
 )
+from fastapi_cache.decorator import cache
 
 router = APIRouter(tags=["posts"])
 
@@ -22,6 +23,7 @@ def create_post(post: Post, db: Session = Depends(get_db), Authorize: AuthJWT = 
 
 
 @router.get("/list/all", status_code=status.HTTP_200_OK, response_model=List[Post])
+@cache(expire=300)
 def get_all_posts(db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
