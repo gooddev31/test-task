@@ -5,7 +5,7 @@ from schemas.posts import DeletePostResponse, Post, UpdatePost
 
 
 def post_create(db: Session, post: Post):
-    db_post = Posts(text=post.text)
+    db_post = Posts(text=post.text, user_id=post.user_id)
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
