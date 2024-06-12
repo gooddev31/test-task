@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from database.connection import get_db
 from schemas.posts import DeletePostResponse, Post, UpdatePost
-from utils.post_crud import (
+from controllers.post_crud import (
     post_create,
     post_delete,
     post_get_one,

@@ -7,6 +7,6 @@ class User(BaseModel):
     class Config:
         orm_mode = True
 
-class CreteUser(BaseModel):
+class CreateUser(BaseModel):
     email: str
     password: str
